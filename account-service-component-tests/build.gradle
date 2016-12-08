@@ -31,7 +31,7 @@ dependencies {
 dockerCompose {
     useComposeFiles = [new File(project.rootProject.getProjectDir(), 'docker-compose.account-service.component.yml').absolutePath]
     stopContainers = true
-    removeContainers = false
+    removeContainers = true
     removeVolumes = false
     waitForHealthyStateTimeout = Duration.ofMinutes(1)
     waitForTcpPortsTimeout = Duration.ofMinutes(3)
