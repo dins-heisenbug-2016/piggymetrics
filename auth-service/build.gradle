@@ -1,0 +1,78 @@
+description = """auth-service"""
+
+configurations {
+    agent
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    agent "org.aspectj:aspectjweaver:${aspectjVersion}"
+
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-mongodb', version: '1.3.5.RELEASE'
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: '1.1.0.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: '1.3.5.RELEASE'
+    compile group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.0.9.RELEASE'
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '1.3.5.RELEASE'
+    compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-eureka', version: '1.1.0.RELEASE') {
+        exclude(module: 'guice-grapher')
+        exclude(module: 'guice-assistedinject')
+        exclude(module: 'jsr166y')
+        exclude(module: 'xbean-finder')
+        exclude(module: 'asm-all')
+        exclude(module: 'guice-multibindings')
+        exclude(module: 'xbean-bundleutils')
+        exclude(module: 'commons-math')
+        exclude(module: 'netflix-infix')
+        exclude(module: 'joda-time')
+        exclude(module: 'commons-jxpath')
+        exclude(module: 'antlr-runtime')
+        exclude(module: 'stringtemplate')
+        exclude(module: 'antlr')
+        exclude(module: 'gson')
+        exclude(module: 'annotations')
+        exclude(module: 'dagger')
+        exclude(module: 'blitz4j')
+        exclude(module: 'hibernate-validator')
+    }
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.3.5.RELEASE') {
+        exclude(module: 'commons-logging')
+    }
+    testCompile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '1.50.3'
+    testCompile group: 'com.jayway.jsonpath', name: 'json-path', version: '2.2.0'
+    testCompile "ru.yandex.qatools.allure:allure-testng-adaptor:${allureVersion}"
+    testCompile "org.aspectj:aspectjweaver:${aspectjVersion}"
+    testCompile "com.epam.reportportal:agent-java-testng:${rpVersion}"
+    testCompile "com.epam.reportportal:logger-java-logback:${rpVersion}"
+    testCompile "ch.qos.logback:logback-classic:1.1.3"
+    testCompile "org.testng:testng:6.9.13.6"
+}
+
+test {
+    useTestNG() {
+        setSuiteName("auth-service")
+        options.listeners << 'com.epam.reportportal.testng.ReportPortalTestNGListener'
+    }
+}
+
+test.doFirst {
+    jvmArgs "-javaagent:${configurations.agent.singleFile}"
+}
+
+task generateAllureReport(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', "${parent.projectDir}\\allure-cli\\bin\\allure.bat generate ${projectDir}\\build\\allure-results -o ${projectDir}\\build\\allure-reports"
+    } else {
+        commandLine 'sh', '-c', "${parent.projectDir}/allure-cli/bin/allure generate ${projectDir}/build/allure-result -o ${projectDir}/build/allure-reports"
+    }
+}
+
+task openAllureReport(type: Exec) {
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', "${parent.projectDir}\\allure-cli\\bin\\allure.bat open ${projectDir}\\build\\allure-reports"
+    } else {
+        commandLine 'sh', '-c', "${parent.projectDir}/allure-cli/bin/allure report ${projectDir}/build/allure-reports"
+    }
+}

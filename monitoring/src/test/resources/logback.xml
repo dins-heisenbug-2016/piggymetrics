@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="ReportPortalAppender" class="com.epam.reportportal.logback.appender.ReportPortalAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%t] %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="ReportPortalAppender"/>
+    </root>
+</configuration>

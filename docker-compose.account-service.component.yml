@@ -1,0 +1,54 @@
+version: '2'
+services:
+  auth-service:
+    build: mock-service
+
+  account-service:
+    environment:
+      eureka.client.enabled: 'false'
+      spring.cloud.bootstrap.enabled: 'false'
+      spring.cloud.config.overrideNone: 'true'
+      server.context-path: /accounts
+      server.port: 6000
+      spring.rabbitmq.enabled: 'false'
+      logging.level.org.springframework.security: DEBUG
+      security.oauth2.client.clientId: account-service
+      security.oauth2.client.clientSecret: admin
+      security.oauth2.client.accessTokenUri: http://auth-service:8080/oauth/token
+      security.oauth2.client.grant-type: client_credentials
+      security.oauth2.client.scope: server
+      security.oauth2.resource.user-info-uri: http://auth-service:8080/users/current
+
+      spring.rabbitmq.listener.auto-startup: 'false'
+      spring.cloud.bus.enabled: 'false'
+
+      spring.data.mongodb.host: account-mongodb
+      spring.data.mongodb.username: user
+      spring.data.mongodb.password: admin
+      spring.data.mongodb.database: piggymetrics
+      spring.data.mongodb.port: 27017
+    build: account-service
+    restart: always
+    ports:
+      - 18080:6000
+    links:
+      - account-mongodb
+      - auth-service
+    depends_on:
+      - account-mongodb
+      - auth-service
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"
+
+  account-mongodb:
+    environment:
+      INIT_DUMP: account-service-dump.js
+      MONGODB_PASSWORD: admin
+    build: mongodb
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "10"

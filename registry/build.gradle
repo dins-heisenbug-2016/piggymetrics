@@ -1,0 +1,31 @@
+description = """registry"""
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    compile(group: 'org.springframework.cloud', name: 'spring-cloud-starter-eureka-server', version: '1.1.0.RELEASE') {
+        exclude(module: 'guice-grapher')
+        exclude(module: 'guice-assistedinject')
+        exclude(module: 'jsr166y')
+        exclude(module: 'xbean-finder')
+        exclude(module: 'asm-all')
+        exclude(module: 'guice-multibindings')
+        exclude(module: 'xbean-bundleutils')
+        exclude(module: 'commons-math')
+        exclude(module: 'netflix-infix')
+        exclude(module: 'joda-time')
+        exclude(module: 'commons-jxpath')
+        exclude(module: 'antlr-runtime')
+        exclude(module: 'stringtemplate')
+        exclude(module: 'antlr')
+        exclude(module: 'gson')
+        exclude(module: 'annotations')
+        exclude(module: 'dagger')
+    }
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-config', version: '1.1.0.RELEASE'
+    testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: '1.3.5.RELEASE') {
+        exclude(module: 'commons-logging')
+    }
+}
